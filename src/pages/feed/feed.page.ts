@@ -9,8 +9,9 @@ import { AddPostForm } from "src/features";
         AddPostForm
     ],
     template: `
-    <div>
+    <div class="p-4">
         <h2>피드 페이지</h2>
+        <br/>
         <add-post-form />
     </div>
     `
