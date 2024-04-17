@@ -1,5 +1,5 @@
-export * from './anime';
 export * from './bookmark';
-export * from './comment';
-export * from './tag';
+export * from './category';
+export * from './post';
 export * from './user';
+

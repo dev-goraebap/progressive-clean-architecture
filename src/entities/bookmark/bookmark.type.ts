@@ -1,6 +1,6 @@
 export type BookmarkEntity = {
     id: string;
     createdAt: Date;
-    animeId: string;
+    postId: string;
     userId: string;
 }
