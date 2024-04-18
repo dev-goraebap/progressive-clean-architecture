@@ -3,7 +3,9 @@ export type CategoryEntity = {
     name: string;
 }
 
-export type CategoryPostEntity = {
-    categoryId: string;
-    postId: string;
+export type CategoryState = {
+    loaded: boolean;
+    count: number;
+    categories: CategoryEntity[];
+    error: null|string;
 }

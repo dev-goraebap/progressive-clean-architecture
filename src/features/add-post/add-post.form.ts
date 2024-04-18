@@ -1,7 +1,8 @@
-import { Component } from "@angular/core";
-import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { Component, signal } from "@angular/core";
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { tap } from "rxjs";
 
-import { AddPostDTO, PostService } from "src/entities";
+import { AddPostDTO, CategoryEntity, CategoryService, PostService } from "src/entities";
 
 import { LinkPreviewApi } from "src/shared";
 
@@ -27,16 +28,25 @@ import { LinkPreviewApi } from "src/shared";
                 <span class="text-sm">설명</span>
                 <input formControlName="description" class="border-2 border-black rounded-md p-2 w-full" readonly />
             </label>
-            <div>
+            <div class="w-[100px]">
                 <span class="text-sm">썸네일</span>
                 <div class="rounded-xl overflow-hidden">
                     <img [src]="formGroup.value.thumbnail" class="w-full" />
                 </div>
             </div>
 
+            <div class="grid grid-cols-3 gap-2" formArrayName="categories">
+                @for (category of categories(); track $index;) {
+                    <div class="p-2  text-sm border-2 border-black rounded-md flex justify-between items-center" [title]="category.name">
+                        <span class="truncate">{{category.name}}</span>
+                        <input type="checkbox"
+                        (click)="onCheck($index, category.id)"/>
+                    </div>
+                }
+            </div>
+
             <button class="w-full border-2 border-black rounded-xl p-2">등록</button>
         }
-
     </form>
     `
 })
@@ -44,17 +54,39 @@ export class AddPostForm {
 
     doneMetaData = false;
 
+    categories = signal<CategoryEntity[]>([]);
+
     readonly formGroup = new FormGroup({
         url: new FormControl(''),
         title: new FormControl(''),
         description: new FormControl(''),
         thumbnail: new FormControl(''),
+        categories: new FormArray([])
     });
 
     constructor(
         private readonly linkPreviewApi: LinkPreviewApi,
-        private readonly postService: PostService,
-    ) { }
+        public readonly categoryService: CategoryService,
+        public readonly postService: PostService,
+        private readonly fb: FormBuilder,
+    ) { 
+        this.categoryService.state$.pipe(
+            tap((state) => {
+                console.log(state);
+                if (!state.categories.length) {
+                    return;
+                }
+                this.categories.set(state.categories);
+                state.categories.forEach((category) => {
+                    console.log(category);
+                    const control = new FormControl(''); 
+                    (this.formGroup.get('categories') as FormArray).push(control);
+                });
+
+                console.log(this.formGroup.value);
+            })
+        ).subscribe();
+    }
 
     onRequestMetaData() {
         const { url } = this.formGroup.value;
@@ -82,8 +114,24 @@ export class AddPostForm {
             });
     }
 
+    onCheck(index: number, categoryId: string) {
+        const categories = this.formGroup.get('categories') as FormArray;
+        const control = categories.at(index);
+        control.setValue(!control.value ? categoryId : '');
+    }
+
     async onSubmit() {
         console.log(this.formGroup.value);
-        await this.postService.add(this.formGroup.value as AddPostDTO);
+        const { categories, ...dto } = this.formGroup.value;
+
+        const categoryIds = categories?.filter(categoryId =>!!categoryId);
+        console.log(categoryIds);
+
+        const result = {
+            ...dto,
+            categoryIds
+        };
+
+        await this.postService.add(result as AddPostDTO);
     }
 }

@@ -8,4 +8,6 @@ export type PostEntity = {
     userId: string;
 }
 
-export type AddPostDTO = Pick<PostEntity, 'url' | 'title' | 'description' | 'thumbnail'>;
+export type AddPostDTO = Pick<PostEntity, 'url' | 'title' | 'description' | 'thumbnail'> & {
+    categoryIds: string[];
+}
