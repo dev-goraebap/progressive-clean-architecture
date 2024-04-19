@@ -1,6 +1,5 @@
-import { Component, signal } from "@angular/core";
+import { Component, effect, inject, signal } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
-import { tap } from "rxjs";
 
 import { AddPostDTO, CategoryEntity, CategoryService, PostService } from "src/entities";
 
@@ -52,6 +51,11 @@ import { LinkPreviewApi } from "src/shared";
 })
 export class AddPostForm {
 
+    private readonly linkPreviewApi: LinkPreviewApi = inject(LinkPreviewApi);
+    public readonly categoryService: CategoryService = inject(CategoryService);
+    public readonly postService: PostService = inject(PostService);
+    private readonly fb: FormBuilder = inject(FormBuilder);
+
     doneMetaData = false;
 
     categories = signal<CategoryEntity[]>([]);
@@ -64,28 +68,10 @@ export class AddPostForm {
         categories: new FormArray([])
     });
 
-    constructor(
-        private readonly linkPreviewApi: LinkPreviewApi,
-        public readonly categoryService: CategoryService,
-        public readonly postService: PostService,
-        private readonly fb: FormBuilder,
-    ) { 
-        this.categoryService.state$.pipe(
-            tap((state) => {
-                console.log(state);
-                if (!state.categories.length) {
-                    return;
-                }
-                this.categories.set(state.categories);
-                state.categories.forEach((category) => {
-                    console.log(category);
-                    const control = new FormControl(''); 
-                    (this.formGroup.get('categories') as FormArray).push(control);
-                });
-
-                console.log(this.formGroup.value);
-            })
-        ).subscribe();
+    constructor() { 
+        effect(() => {
+            console.log(this.categoryService.state$());
+        });
     }
 
     onRequestMetaData() {

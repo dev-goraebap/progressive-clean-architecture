@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+
+import { PocketBaseClient } from 'src/shared';
 
 @Component({
   selector: 'app-root',
@@ -10,5 +12,10 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'our-favorite-anime';
+
+  private readonly pocketBaseClient: PocketBaseClient = inject(PocketBaseClient);
+  
+  constructor() {
+    this.pocketBaseClient.initialize();
+  }
 }

@@ -16,7 +16,4 @@ import { AddPostForm } from "src/features";
     </div>
     `
 })
-export class FeedPage {
-
-    constructor() { }
-}
+export class FeedPage { }
