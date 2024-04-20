@@ -5,7 +5,7 @@ import { tap } from "rxjs";
 
 import { CategoryModel, CategoryService } from "src/entities";
 import { CategoryCheckbox, RequestUrlMetadataButton } from "src/features";
-import { LinkPreviewMetaData } from "src/shared";
+import { BaseInput, LinkPreviewMetaData } from "src/shared";
 
 @Component({
     selector: 'add-post-form-widget',
@@ -13,7 +13,8 @@ import { LinkPreviewMetaData } from "src/shared";
     imports: [
         ReactiveFormsModule,
         RequestUrlMetadataButton,
-        CategoryCheckbox
+        CategoryCheckbox,
+        BaseInput
     ],
     template: `
     <form [formGroup]="formGroup" (submit)="onSubmit()" class="flex flex-col gap-2">
@@ -24,14 +25,11 @@ import { LinkPreviewMetaData } from "src/shared";
                 (resultEvent)="onLoadMetaData($event)"
             />
         </div>
-        <label>
-            <span class="text-sm">제목</span>
-            <input formControlName="title" class="border-2 border-black rounded-md p-2 w-full" readonly />
-        </label>
-        <label>
-            <span class="text-sm">설명</span>
-            <input formControlName="description" class="border-2 border-black rounded-md p-2 w-full" readonly />
-        </label>
+        
+        <base-input label="제목" formControlName="title" readonly/>
+
+        <base-input label="설명" formControlName="description" readonly/>
+
         <div class="w-[100px]">
             <span class="text-sm">썸네일</span>
             <div class="rounded-xl overflow-hidden">
@@ -52,6 +50,7 @@ import { LinkPreviewMetaData } from "src/shared";
         </div>
 
         <br/>
+        
         <button class="w-full border-2 border-black rounded-xl p-2">등록</button>
     </form>
     `
@@ -92,7 +91,7 @@ export class AddPostFormWidget {
     }
 
     onSubmit() {
-        console.log(this.categories);
+        console.log(this.formGroup.value);
     }
 
     private initFormGroup() {

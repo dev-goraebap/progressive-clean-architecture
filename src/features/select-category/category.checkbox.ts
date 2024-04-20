@@ -32,29 +32,29 @@ export class CategoryCheckbox implements ControlValueAccessor {
     value: boolean = false;
 
     onChecked() {
-        this.value =!this.value;
-        this.onChange(this.value);
-        this.onTouched();
+        this.value = !this.value;
+        this._onChange(this.value);
+        this._onTouched();
     }
 
     // # implementation of ControlValueAccessor
 
-    onChange = (_: boolean) => {};
-    
-    onTouched = () => { };
-
     writeValue(value: boolean): void {
-        if (typeof value!== 'boolean') {
-            throw new Error('Boolean 타입만 입력 가능');   
+        if (typeof value !== 'boolean') {
+            throw new Error('Boolean 타입만 입력 가능');
         }
         this.value = value;
     }
 
     registerOnChange(fn: any): void {
-        this.onChange = fn;
+        this._onChange = fn;
     }
 
     registerOnTouched(fn: any): void {
-        this.onTouched = fn;
+        this._onTouched = fn;
     }
+
+    private _onChange = (_: boolean) => { };
+
+    private _onTouched = () => { };
 }
