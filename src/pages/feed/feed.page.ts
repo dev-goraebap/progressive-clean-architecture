@@ -12,7 +12,7 @@ import { AddPostFormWidget } from "src/widgets";
     <div class="p-4">
         <h2>피드 페이지</h2>
         <br/>
-        <add-post-form-widget/>
+        <add-post-form-widget />
     </div>
     `
 })

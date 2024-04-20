@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { tap } from "rxjs";
 
-import { CategoryService } from "src/entities";
+import { CategoryModel, CategoryService } from "src/entities";
 import { CategoryCheckbox, RequestUrlMetadataButton } from "src/features";
 import { LinkPreviewMetaData } from "src/shared";
 
@@ -24,31 +24,35 @@ import { LinkPreviewMetaData } from "src/shared";
                 (resultEvent)="onLoadMetaData($event)"
             />
         </div>
-        @if(loadMetaData) {
-            <label>
-                <span class="text-sm">제목</span>
-                <input formControlName="title" class="border-2 border-black rounded-md p-2 w-full" readonly />
-            </label>
-            <label>
-                <span class="text-sm">설명</span>
-                <input formControlName="description" class="border-2 border-black rounded-md p-2 w-full" readonly />
-            </label>
-            <div class="w-[100px]">
-                <span class="text-sm">썸네일</span>
-                <div class="rounded-xl overflow-hidden">
-                    <img [src]="formGroup.value.thumbnail" class="w-full" />
+        <label>
+            <span class="text-sm">제목</span>
+            <input formControlName="title" class="border-2 border-black rounded-md p-2 w-full" readonly />
+        </label>
+        <label>
+            <span class="text-sm">설명</span>
+            <input formControlName="description" class="border-2 border-black rounded-md p-2 w-full" readonly />
+        </label>
+        <div class="w-[100px]">
+            <span class="text-sm">썸네일</span>
+            <div class="rounded-xl overflow-hidden">
+                <img [src]="formGroup.value.thumbnail" class="w-full" />
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2" formArrayName="categories">
+            @for (control of categories.controls; track $index;) {
+                <div [formGroupName]="$index">
+                    <category-checkbox 
+                        [id]="control.get('id')?.value"
+                        [name]="control.get('name')?.value"
+                        formControlName="checked"
+                    />
                 </div>
-            </div>
+            }
+        </div>
 
-            <div class="grid grid-cols-2 gap-2" formArrayName="categories" formArrayName="categories">
-                @for (control of categories.controls; track $index;) {
-                    <category-checkbox [label]="control.value.name" [formControlName]="$index+'checked'"/>
-                }
-            </div>
-
-            <br/>
-            <button class="w-full border-2 border-black rounded-xl p-2">등록</button>
-        }
+        <br/>
+        <button class="w-full border-2 border-black rounded-xl p-2">등록</button>
     </form>
     `
 })
@@ -56,7 +60,7 @@ export class AddPostFormWidget {
 
     loadMetaData = false;
 
-    readonly formGroup!: FormGroup;
+    formGroup!: FormGroup;
 
     private readonly formBuilder = inject(FormBuilder);
 
@@ -65,43 +69,16 @@ export class AddPostFormWidget {
     private readonly destroyRef = inject(DestroyRef);
 
     constructor() {
-        this.formGroup = this.formBuilder.group({
-            url: new FormControl(''),
-            title: new FormControl(''),
-            description: new FormControl(''),
-            thumbnail: new FormControl(''),
-            categories: new FormArray([])
-        });
+        this.initFormGroup();
 
         this.categoryService.getCategories().pipe(
-            tap(result => {
-                console.log(result);
-                const formArray = this.formGroup.get('categories') as FormArray;
-
-                result.items.forEach(category => {
-                    formArray.push(
-                        new FormGroup({
-                            checked: new FormControl(false),
-                            name: new FormControl(category.name),
-                            id: new FormControl(category.id)
-                        })
-                    );
-                });
-
-                console.log(this.formGroup);
-            }),
+            tap(state => this.addFromArrayItems(state.items)),
             takeUntilDestroyed(this.destroyRef)
         ).subscribe();
     }
 
-    get categories(): FormArray {
+    get categories() {
         return this.formGroup.get('categories') as FormArray;
-    }
-
-    onCheck(index: number, categoryId: string) {
-        const categories = this.formGroup.get('categories') as FormArray;
-        const control = categories.at(index);
-        control.setValue(!control.value ? categoryId : '');
     }
 
     onLoadMetaData(metadata: LinkPreviewMetaData) {
@@ -116,17 +93,29 @@ export class AddPostFormWidget {
 
     onSubmit() {
         console.log(this.categories);
-        // console.log(this.formGroup.value);
-        // const { categories, ...dto } = this.formGroup.value;
+    }
 
-        // const categoryIds = categories?.filter(categoryId =>!!categoryId);
-        // console.log(categoryIds);
+    private initFormGroup() {
+        this.formGroup = this.formBuilder.group({
+            url: this.formBuilder.control(''),
+            title: this.formBuilder.control(''),
+            description: this.formBuilder.control(''),
+            thumbnail: this.formBuilder.control(''),
+            categories: new FormArray([])
+        });
+    }
 
-        // const result = {
-        //     ...dto,
-        //     categoryIds
-        // };
+    private addFromArrayItems(categories: CategoryModel[]) {
+        const formArray = this.formGroup.get('categories') as FormArray;
 
-        // await this.postService.add(result as AddPostDTO);
+        categories.forEach(category =>
+            formArray.push(
+                new FormGroup({
+                    checked: new FormControl(false),
+                    name: new FormControl(category.name),
+                    id: new FormControl(category.id)
+                })
+            )
+        );
     }
 }

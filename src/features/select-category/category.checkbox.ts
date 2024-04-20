@@ -1,11 +1,13 @@
 import { Component, Input, forwardRef } from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
 
 
 @Component({
     selector: 'category-checkbox',
     standalone: true,
-    imports: [],
+    imports: [
+        FormsModule
+    ],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
@@ -14,41 +16,45 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
         }
     ],
     template: `
-    <button 
-    class="w-full p-2 text-sm border-2 border-black rounded-md flex justify-between items-center" >
-        <span class="truncate">{{label}}</span>
-        <input type="checkbox" [checked]="isChecked" />
-    </button>
+    <label 
+    [htmlFor]="id"
+    class="w-full p-2 text-sm border-2 border-black rounded-md flex justify-between items-center cursor-pointer">
+        <span class="truncate">{{name}}</span>
+        <input [id]="id" type="checkbox" [checked]="value" (click)="onChecked()"/>
+    </label>
     `
 })
 export class CategoryCheckbox implements ControlValueAccessor {
 
-    @Input() label: string = '';
+    @Input() id!: string;
+    @Input() name!: string;
 
-    isChecked: boolean = false;
+    value: boolean = false;
 
-    onChange = (value: any) => {
-        console.log(value);
-    };
+    onChecked() {
+        this.value =!this.value;
+        this.onChange(this.value);
+        this.onTouched();
+    }
 
-    onTouched = () => {};
+    // # implementation of ControlValueAccessor
 
-    writeValue(obj: any): void {
-        console.debug('writeValue', obj);
-        this.onChange(obj);
+    onChange = (_: boolean) => {};
+    
+    onTouched = () => { };
+
+    writeValue(value: boolean): void {
+        if (typeof value!== 'boolean') {
+            throw new Error('Boolean 타입만 입력 가능');   
+        }
+        this.value = value;
     }
 
     registerOnChange(fn: any): void {
-        console.debug('registerOnChange', fn);
         this.onChange = fn;
     }
 
     registerOnTouched(fn: any): void {
         this.onTouched = fn;
-        console.debug('registerOnTouched', fn);
-    }
-
-    setDisabledState?(isDisabled: boolean): void {
-        console.debug('setDisabledState', isDisabled);
     }
 }
