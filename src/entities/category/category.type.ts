@@ -1,11 +1,12 @@
-export type CategoryEntity = {
+import { ListResult } from "pocketbase";
+
+
+export type CategoryModel = {
     id: string;
     name: string;
 }
 
-export type CategoryState = {
+export type CategoryState = ListResult<CategoryModel> & {
     loaded: boolean;
-    count: number;
-    categories: CategoryEntity[];
-    error: null|string;
-}
+    error: string | null;
+};

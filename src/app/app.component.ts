@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { PocketBaseClient } from 'src/shared';
+import { pocketBaseInitialize } from 'src/shared';
 
 @Component({
   selector: 'app-root',
@@ -12,10 +12,8 @@ import { PocketBaseClient } from 'src/shared';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-
-  private readonly pocketBaseClient: PocketBaseClient = inject(PocketBaseClient);
   
   constructor() {
-    this.pocketBaseClient.initialize();
+    pocketBaseInitialize();
   }
 }
