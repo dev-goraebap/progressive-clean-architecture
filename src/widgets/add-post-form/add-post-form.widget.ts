@@ -1,11 +1,12 @@
 import { Component, DestroyRef, inject } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
+
 import { tap } from "rxjs";
 
-import { CategoryModel, CategoryService } from "src/entities";
+import { CategoryModel, CategoryService, PostService } from "src/entities";
 import { CategoryCheckbox, RequestUrlMetadataButton } from "src/features";
-import { BaseInput, LinkPreviewMetaData } from "src/shared";
+import { BaseInput, LinkPreviewMetaData, fadeInOut } from "src/shared";
 
 @Component({
     selector: 'add-post-form-widget',
@@ -16,6 +17,9 @@ import { BaseInput, LinkPreviewMetaData } from "src/shared";
         CategoryCheckbox,
         BaseInput
     ],
+    animations: [
+        fadeInOut
+    ],
     template: `
     <form [formGroup]="formGroup" (submit)="onSubmit()" class="flex flex-col gap-2 w-full">
         <div class="flex gap-2">
@@ -25,33 +29,37 @@ import { BaseInput, LinkPreviewMetaData } from "src/shared";
                 (resultEvent)="onLoadMetaData($event)"
             />
         </div>
-        
-        <base-input label="제목" formControlName="title" readonly/>
 
-        <base-input label="설명" formControlName="description" readonly/>
+        @if (loadMetaData) {
+            <div class="flex flex-col gap-2 w-full" @fadeInOut>
+                <base-input label="제목" formControlName="title" readonly/>
 
-        <div class="w-[100px]">
-            <span class="text-sm">썸네일</span>
-            <div class="rounded-xl overflow-hidden">
-                <img [src]="formGroup.value.thumbnail" class="w-full" />
-            </div>
-        </div>
+                <base-input label="설명" formControlName="description" readonly/>
 
-        <div class="grid grid-cols-2 gap-2" formArrayName="categories">
-            @for (control of categories.controls; track $index;) {
-                <div [formGroupName]="$index">
-                    <category-checkbox 
-                        [id]="control.get('id')?.value"
-                        [name]="control.get('name')?.value"
-                        formControlName="checked"
-                    />
+                <div class="w-[100px]">
+                    <span class="text-sm">썸네일</span>
+                    <div class="rounded-xl overflow-hidden">
+                        <img [src]="formGroup.value.thumbnail" class="w-full" />
+                    </div>
                 </div>
-            }
-        </div>
 
-        <br/>
-        
-        <button class="w-full border-2 border-black rounded-xl p-2">등록</button>
+                <div class="grid grid-cols-2 gap-2" formArrayName="categories">
+                    @for (control of categories.controls; track $index;) {
+                        <div [formGroupName]="$index">
+                            <category-checkbox 
+                                [id]="control.get('id')?.value"
+                                [name]="control.get('name')?.value"
+                                formControlName="checked"
+                            />
+                        </div>
+                    }
+                </div>
+
+                <br/>
+
+                <button class="w-full border-2 border-black rounded-xl p-2">등록</button>
+            </div>
+        }
     </form>
     `
 })
@@ -63,9 +71,11 @@ export class AddPostFormWidget {
 
     private readonly formBuilder = inject(FormBuilder);
 
+    private readonly destroyRef = inject(DestroyRef);
+
     private readonly categoryService = inject(CategoryService);
 
-    private readonly destroyRef = inject(DestroyRef);
+    private readonly postService = inject(PostService);
 
     constructor() {
         this.initFormGroup();
@@ -91,7 +101,14 @@ export class AddPostFormWidget {
     }
 
     onSubmit() {
-        console.log(this.formGroup.value);
+        const { categories, ...dto  } = this.formGroup.value;
+        console.log(categories);
+        const categoryIds = (categories as any[])
+            .filter(category => !!category.checked)
+            .map(category => category.id);
+
+        console.log(categoryIds);
+        this.postService.addPost({ ...dto, categoryIds }).subscribe();
     }
 
     private initFormGroup() {
