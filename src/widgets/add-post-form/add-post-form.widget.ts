@@ -17,7 +17,7 @@ import { BaseInput, LinkPreviewMetaData } from "src/shared";
         BaseInput
     ],
     template: `
-    <form [formGroup]="formGroup" (submit)="onSubmit()" class="flex flex-col gap-2">
+    <form [formGroup]="formGroup" (submit)="onSubmit()" class="flex flex-col gap-2 w-full">
         <div class="flex gap-2">
             <input placeholder="url을 입력해 주세요." formControlName="url" class="border-2 border-black rounded-md p-2 w-full" />
             <request-url-metadata-button 
