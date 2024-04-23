@@ -6,4 +6,6 @@
 
 ![thumbnail](https://github.com/dev-goraebap/meta-link/blob/develop/.git-assets/thumbnail.png)
 
+![upload](https://github.com/dev-goraebap/meta-link/blob/develop/.git-assets/upload.png)
+
 <img src="https://github.com/dev-goraebap/meta-link/blob/develop/.git-assets/upload-action.gif"/>
