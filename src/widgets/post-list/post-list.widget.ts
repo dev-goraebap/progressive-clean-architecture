@@ -1,8 +1,4 @@
-import { IMAGE_CONFIG } from "@angular/common";
-import { AfterViewInit, Component, ElementRef, ViewChild, inject } from "@angular/core";
-
-import imagesLoaded from "imagesloaded";
-import Masonry from "masonry-layout";
+import { AfterViewInit, Component, inject } from "@angular/core";
 
 import { tap } from "rxjs";
 
@@ -13,34 +9,37 @@ import { fadeInOut } from "src/shared";
     selector: 'post-list-widget',
     standalone: true,
     imports: [
-        PostCard
+        PostCard,
     ],
-    providers: [
-        {
-            provide: IMAGE_CONFIG,
-            useValue: {
-                disableImageSizeWarning: true,
-                disableImageLazyLoadWarning: true
-            }
-        },
+    styles: [
+        `
+        :host {
+            width: 100%;
+            height: 100%;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 컬럼 크기를 자동으로 조절 */
+            grid-auto-flow: column; /* 아이템을 컬럼 방향으로 쌓음 */
+            grid-gap: 10px; /* 그리드 사이 간격 */
+        }
+        `
     ],
     animations: [
         fadeInOut
     ],
     template: `
-    <div @fadeInOut #masonryView class="w-full md:w-[800px]">
-        @for (item of postState?.items; track item.id) {
-            <post-card [item]="item" />
+    <div class="border border-red-500 w-full sm:w-full md:w-[1000px] flex justify-center">
+        @for (item of postState?.items; track $index) {
+            <img [src]="item.thumbnail" class="w-[200px]"/>
         }
     </div>
     `
 })
 export class PostListWidget implements AfterViewInit {
 
-    @ViewChild('masonryView') masonryView!: ElementRef<HTMLDivElement>;
-
     postState?: PostState;
-
+    
     private readonly postService = inject(PostService);
 
     constructor() {
@@ -50,24 +49,6 @@ export class PostListWidget implements AfterViewInit {
     }
 
     ngAfterViewInit() {
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (!mutation.addedNodes.length) {
-                    return;
-                }
 
-                observer.disconnect();
-
-                imagesLoaded(this.masonryView.nativeElement, () => {
-                    new Masonry(this.masonryView.nativeElement, {
-                        itemSelector: '.masonry-item',
-                    });
-                });
-            });
-        });
-
-        observer.observe(this.masonryView.nativeElement, {
-            childList: true
-        });
     }
 }
