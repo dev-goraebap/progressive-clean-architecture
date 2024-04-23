@@ -5,3 +5,5 @@
 홈페이지에서 다양한 카테고리 중 하나를 선택하면, 다른 사용자들이 추천하는 멋진 웹사이트들을 탐색할 수 있습니다. 찾아보고, 영감을 얻으세요!
 
 ![thumbnail](https://github.com/dev-goraebap/meta-link/blob/develop/.git-assets/thumbnail.png)
+
+<img src="https://github.com/dev-goraebap/meta-link/blob/develop/.git-assets/upload-action.gif"/>
