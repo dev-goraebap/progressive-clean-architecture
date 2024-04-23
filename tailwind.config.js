@@ -9,5 +9,5 @@ module.exports = {
       pretendard: 'Pretendard Variable, sans-serif',
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
 }
