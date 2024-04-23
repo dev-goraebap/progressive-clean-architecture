@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, inject } from "@angular/core";
+import { Component, DestroyRef, inject } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 import { tap } from "rxjs";
 
@@ -11,44 +12,29 @@ import { fadeInOut } from "src/shared";
     imports: [
         PostCard,
     ],
-    styles: [
-        `
-        :host {
-            width: 100%;
-            height: 100%;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 컬럼 크기를 자동으로 조절 */
-            grid-auto-flow: column; /* 아이템을 컬럼 방향으로 쌓음 */
-            grid-gap: 10px; /* 그리드 사이 간격 */
-        }
-        `
-    ],
     animations: [
         fadeInOut
     ],
     template: `
-    <div class="border border-red-500 w-full sm:w-full md:w-[1000px] flex justify-center">
+    <div @fadeInOut class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         @for (item of postState?.items; track $index) {
-            <img [src]="item.thumbnail" class="w-[200px]"/>
+            <post-card [item]="item"/>
         }
     </div>
     `
 })
-export class PostListWidget implements AfterViewInit {
+export class PostListWidget {
 
     postState?: PostState;
-    
+
     private readonly postService = inject(PostService);
+
+    private readonly destroyRef = inject(DestroyRef);
 
     constructor() {
         this.postService.getPosts().pipe(
-            tap(state => this.postState = state)
+            tap(state => this.postState = state),
+            takeUntilDestroyed(this.destroyRef)
         ).subscribe();
-    }
-
-    ngAfterViewInit() {
-
     }
 }

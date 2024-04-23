@@ -22,7 +22,7 @@ export class ModalController {
         return this._state.asObservable();
     }
 
-    open(component: any, data: any) {
+    open(component: any, data?: any) {
         this._state.next({
             opened: true,
             component,

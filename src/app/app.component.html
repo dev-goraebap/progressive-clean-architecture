@@ -1,5 +1,19 @@
-<div class="flex justify-center h-screen overflow-hidden overflow-y-auto">
-    <div class="w-full h-full lg:w-[1000px]">
+<div class="flex justify-center h-screen overflow-hidden overflow-y-auto font-pretendard">
+    <div class="w-full h-full lg:w-[1000px] p-2 sm:p-4">
+        <header class="flex items-center justify-between py-4 sm:py-6">
+            <div class="text-2xl font-bold sm:text-4xl font-gothamBold">Meta Link ✨</div>
+
+            <button class="flex btn" (click)="onOpenModal()">
+                <span>
+                    게시물 생성
+                </span>
+                <span class="w-5 sm:w-6">
+                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.a{fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;}</style></defs><path class="a" d="M23.0551,14.2115l6.942-6.9421c2.6788-2.6788,7.5386-2.1623,10.2172.5164s3.1951,7.5384.5163,10.2172L30.4481,28.2856c-2.6788,2.6788-7.5386,2.1623-10.2172-.5163"></path><path class="a" d="M24.9449,33.7885l-6.942,6.9421c-2.6788,2.6788-7.5386,2.1623-10.2172-.5164S4.5906,32.6758,7.2694,29.997L17.5519,19.7144c2.6788-2.6788,7.5386-2.1623,10.2172.5163"></path></g></svg>
+                </span>
+            </button>
+        </header>
+
+        <br />
         <router-outlet></router-outlet>
     </div>
 </div>

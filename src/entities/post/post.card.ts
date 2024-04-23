@@ -10,14 +10,17 @@ import { PostModel } from "./post.type";
         NgOptimizedImage,
     ],
     template: `
-    <div class="flex flex-col gap-1 p-2">
-        <a [href]="item.url" target="_blank" class="w-full overflow-hidden rounded-xl border">
-            <img [ngSrc]="item.thumbnail" [alt]="item.description" loading="lazy" [width]="200" [height]="200" />
-        </a>
-        <a [href]="item.url" target="_blank" class="w-full">
-            <p class="text-sm font-bold">{{ item.title }}</p>
-            <p class="text-xs break-all">{{ item.description }}</p>
-        </a>
+    <div class="relative w-full flex flex-col gap-2">
+        <div class="w-full h-[100px] border
+        flex justify-center items-center 
+        overflow-hidden rounded-xl">
+            <img [src]="item.thumbnail" loading="lazy" class="min-h-[100px]"/>
+        </div>
+
+        <div class="w-full">
+            <p class="text-sm font-bold truncate" [title]="item.title">{{ item.title }}</p>
+            <p class="text-sm truncate" [title]="item.description">{{ item.description }}</p>
+        </div>
     </div>
     `
 })
