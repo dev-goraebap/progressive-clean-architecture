@@ -18,9 +18,9 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/f
     template: `
     <label 
     [htmlFor]="id"
-    class="w-full p-2 text-sm border-2 border-black rounded-md flex justify-between items-center cursor-pointer">
+    class="w-full p-2 text-sm border rounded-xl flex justify-between items-center cursor-pointer">
         <span class="truncate">{{name}}</span>
-        <input [id]="id" type="checkbox" [checked]="value" (click)="onChecked()"/>
+        <input [id]="id" type="checkbox" class="checkbox" [checked]="value" (click)="onChecked()"/>
     </label>
     `
 })

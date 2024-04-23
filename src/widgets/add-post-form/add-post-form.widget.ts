@@ -5,7 +5,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } f
 import { tap } from "rxjs";
 
 import { CategoryModel, CategoryService, PostService } from "src/entities";
-import { CategoryCheckbox, RequestUrlMetadataButton } from "src/features";
+import { CategoryCheckbox, RequestUrlMetadataInput } from "src/features";
 import { BaseInput, LinkPreviewMetaData, fadeInOut } from "src/shared";
 
 @Component({
@@ -13,7 +13,7 @@ import { BaseInput, LinkPreviewMetaData, fadeInOut } from "src/shared";
     standalone: true,
     imports: [
         ReactiveFormsModule,
-        RequestUrlMetadataButton,
+        RequestUrlMetadataInput,
         CategoryCheckbox,
         BaseInput
     ],
@@ -22,26 +22,30 @@ import { BaseInput, LinkPreviewMetaData, fadeInOut } from "src/shared";
     ],
     template: `
     <form [formGroup]="formGroup" (submit)="onSubmit()" class="flex flex-col gap-2 w-full">
+        <legend class="font-gothamBold text-2xl">Add Awesome Url 🪄</legend>
+        
         <div class="flex gap-2">
-            <input placeholder="url을 입력해 주세요." formControlName="url" class="border-2 border-black rounded-md p-2 w-full" />
-            <request-url-metadata-button 
-                [url]="formGroup.get('url')?.value"
+            <request-url-metadata-input 
+                label="URL"
+                formControlName="url"
                 (resultEvent)="onLoadMetaData($event)"
             />
         </div>
 
         @if (loadMetaData) {
-            <div class="flex flex-col gap-2 w-full" @fadeInOut>
+            <div class="flex flex-col w-full" @fadeInOut>
                 <base-input label="제목" formControlName="title" readonly/>
 
                 <base-input label="설명" formControlName="description" readonly/>
 
-                <div class="w-[100px]">
-                    <span class="text-sm">썸네일</span>
-                    <div class="rounded-xl overflow-hidden">
-                        <img [src]="formGroup.value.thumbnail" class="w-full" />
-                    </div>
+                <br/>
+
+                <span class="text-sm">썸네일</span>
+                <div class="rounded-xl overflow-hidden h-[100px] flex justify-center items-center border">
+                    <img [src]="formGroup.value.thumbnail" class="min-h-[100px]" />
                 </div>
+
+                <br/>
 
                 <div class="grid grid-cols-2 gap-2" formArrayName="categories">
                     @for (control of categories.controls; track $index;) {
@@ -57,7 +61,7 @@ import { BaseInput, LinkPreviewMetaData, fadeInOut } from "src/shared";
 
                 <br/>
 
-                <button class="w-full border-2 border-black rounded-xl p-2">등록</button>
+                <button class="btn w-full">등록</button>
             </div>
         }
     </form>

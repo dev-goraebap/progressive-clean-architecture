@@ -1,13 +1,15 @@
-import { Component, Input, forwardRef } from "@angular/core";
+import { Component, EventEmitter, Input, Output, forwardRef, inject } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { LinkPreviewApi, LinkPreviewMetaData } from "src/shared";
+
 
 @Component({
-    selector: 'base-input',
+    selector: 'request-url-metadata-input',
     standalone: true,
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => BaseInput),
+            useExisting: forwardRef(() => RequestUrlMetadataInput),
             multi: true
         }
     ],
@@ -35,7 +37,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
     </label>
     `
 })
-export class BaseInput implements ControlValueAccessor {
+export class RequestUrlMetadataInput implements ControlValueAccessor {
 
     @Input() label!: string;
 
@@ -46,6 +48,11 @@ export class BaseInput implements ControlValueAccessor {
         }
     }) readonly?: boolean;
 
+    @Output()
+    readonly resultEvent = new EventEmitter<LinkPreviewMetaData>();
+
+    private readonly linkPreviewApi = inject(LinkPreviewApi);
+
     value: string = '';
 
     onChange(event: Event) {
@@ -55,6 +62,22 @@ export class BaseInput implements ControlValueAccessor {
 
         this._onChange(value);
         this._onTouched();
+
+        if (!this.value) {
+            window.alert('url을 입력해 주세요.');
+            return;
+        }
+
+        this.linkPreviewApi.getMetaData(this.value)
+            .subscribe({
+                next: (data) => {
+                    this.resultEvent.emit(data);
+                },
+                error: (error) => {
+                    console.log(error);
+                    window.alert('사용할 수 없는 url 형식이거나 사이트에서 접근을 제한합니다.');
+                }
+            });
     }
 
     // # implementation of ControlValueAccessor
