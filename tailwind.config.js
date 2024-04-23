@@ -7,6 +7,8 @@ module.exports = {
     extend: {},
     fontFamily: {
       pretendard: 'Pretendard Variable, sans-serif',
+      billieHarley: 'BillieHarley, sans-serif',
+      gothamBold: 'Gotham-Bold, sans-serif',
     },
   },
   plugins: [require("daisyui")],

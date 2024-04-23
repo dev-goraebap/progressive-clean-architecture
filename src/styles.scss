@@ -10,4 +10,18 @@
         font-display: swap;
         src: url('./assets/font/PretendardVariable.woff2') format('woff2-variations');
     }
+    @font-face {
+        font-family: 'BillieHarley';
+        font-weight: 45 920;
+        font-style: normal;
+        font-display: swap;
+        src: url('./assets/font/BillieHarley.otf');
+    }
+    @font-face {
+        font-family: 'Gotham-Bold';
+        font-weight: 45 920;
+        font-style: normal;
+        font-display: swap;
+        src: url('./assets/font/Gotham-Bold.otf');
+    }
 }
