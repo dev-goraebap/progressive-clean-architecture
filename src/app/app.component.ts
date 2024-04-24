@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { ModalComponent, ModalController, pocketBaseInitialize } from 'src/shared';
+import { ModalComponent, ModalController } from 'src/shared';
 import { AddPostFormWidget } from 'src/widgets';
 
 @Component({
@@ -20,9 +20,7 @@ export class AppComponent {
 
   private readonly modalCtrl = inject(ModalController);
 
-  constructor() {
-    pocketBaseInitialize();
-  }
+  constructor() {}
 
   onOpenModal() {
     this.modalCtrl.open(AddPostFormWidget);

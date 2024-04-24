@@ -1,8 +1,7 @@
-import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Injectable, inject } from "@angular/core";
 
-import { pocketBaseClient } from "src/shared";
-
-import { BehaviorSubject, Observable, from, switchMap } from "rxjs";
+import { BehaviorSubject, Observable, tap } from "rxjs";
 import { AddPostDTO, PostState } from "./post.type";
 
 @Injectable({
@@ -10,7 +9,7 @@ import { AddPostDTO, PostState } from "./post.type";
 })
 export class PostService {
 
-    private readonly pocketbase = pocketBaseClient();
+    private readonly http = inject(HttpClient);
 
     private readonly state = new BehaviorSubject<PostState>({
         loaded: false,
@@ -23,33 +22,23 @@ export class PostService {
     });
 
     getPosts() {
-        const promise = this.pocketbase.collection('posts').getList();
-
-        return from(promise).pipe(
-            switchMap((result: any) => {
+        return this.http.get<any>('api/get-posts').pipe(
+            tap(res => {
+                console.log(res);
                 this.state.next({
-                    ...result,
+                   ...this.state.value,
                     loaded: true,
-                    error: null
+                    items: res.results,
+                    error: null,
                 });
-                
-                return this.state.asObservable();
-            }),
+            })
         );
     }
 
-    addPost({ categoryIds, ...dto }: AddPostDTO): Observable<any> {
-        const promise = this.pocketbase.collection('posts').create(dto);
-
-        return from(promise).pipe(
-            switchMap(result => {
-                return Promise.all(
-                    categoryIds.map(categoryId => 
-                        this.pocketbase.collection('post_category').create({
-                        post_id: result.id,
-                        category_id: categoryId
-                    }, { $autoCancel: false }))
-                );
+    addPost({ categoryIds, ...dto }: AddPostDTO) {
+        return this.http.post<void>('api/add-post', { categoryIds,...dto }).pipe(
+            tap(() => {
+                this.getPosts();
             })
         );
     }
