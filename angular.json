@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "our-favorite-anime": {
+    "meta-link": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/our-favorite-anime",
+            "outputPath": "dist/meta-link",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -68,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "our-favorite-anime:build:production"
+              "buildTarget": "meta-link:build:production"
             },
             "development": {
-              "buildTarget": "our-favorite-anime:build:development"
+              "buildTarget": "meta-link:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -79,7 +79,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "our-favorite-anime:build"
+            "buildTarget": "meta-link:build"
           }
         },
         "test": {
