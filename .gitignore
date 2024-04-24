@@ -42,3 +42,7 @@ testem.log
 Thumbs.db
 
 environment*.ts
+
+.wrangler
+*.toml
+sql
