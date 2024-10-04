@@ -21,7 +21,7 @@ export class MemberModel {
         Object.freeze(this);
     }
 
-    static createWithAuth(prop: Pick<MemberModel, 'id' | 'nickname' | 'email' | 'agreedPolicies' | 'tokens' | 'auth'>) {
+    static createWithAuth(prop: Pick<MemberModel, 'id' | 'nickname' | 'email' | 'agreedPolicies' | 'auth'>, authToken: AuthTokenVO) {
         const createdAt = new Date();
         const updatedAt = createdAt;
         const emailVerifyExpiredAt = new Date(EMAIL_VERIFIED_EXPIRED_TIME + createdAt.getTime());
@@ -35,14 +35,14 @@ export class MemberModel {
             auth: prop.auth,
             socials: [],
             agreedPolicies: prop.agreedPolicies,
-            tokens: prop.tokens,
+            tokens: [authToken],
             createdAt,
             updatedAt,
             deletedAt,
         });
     }
 
-    static createWithSocial(prop: Pick<MemberModel, 'id' | 'nickname' | 'email' | 'agreedPolicies' | 'tokens'>, social: SocialVO) {
+    static createWithSocial(prop: Pick<MemberModel, 'id' | 'nickname' | 'email' | 'agreedPolicies'>, social: SocialVO, authToken: AuthTokenVO) {
         const createdAt = new Date();
         const updatedAt = createdAt;
         const emailVerifyExpiredAt = new Date(EMAIL_VERIFIED_EXPIRED_TIME + createdAt.getTime());
@@ -56,7 +56,7 @@ export class MemberModel {
             auth: null,
             socials: [social],
             agreedPolicies: prop.agreedPolicies,
-            tokens: prop.tokens,
+            tokens: [authToken],
             createdAt,
             updatedAt,
             deletedAt,
