@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { LocalAuthService } from "./local-auth.service";
+import { LocalAuthService } from "./services/local-auth.service";
 
 @Module({
     providers: [

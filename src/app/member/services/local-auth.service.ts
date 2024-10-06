@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { MemberModel } from "./core/models";
-import { AgreedPolicyVO, AuthTokenVO, AuthVO } from "./core/value-objects";
+import { MemberModel } from "../core/models";
+import { AgreedPolicyVO, AuthTokenVO, AuthVO } from "../core/value-objects";
 
 @Injectable()
 export class LocalAuthService {
