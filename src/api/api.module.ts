@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { MemberModule } from "src/app/member";
 import { PolicyModule } from "src/app/policy";
-import { AuthController } from "./auth.controller";
-import { MemberController } from "./member.controller";
+import { AuthController } from "./controllers/auth.controller";
+import { MemberController } from "./controllers/member.controller";
 
 @Module({
     imports: [
@@ -14,4 +14,4 @@ import { MemberController } from "./member.controller";
         AuthController
     ],
 })
-export class MemberApiModule { }
+export class ApiModule {}

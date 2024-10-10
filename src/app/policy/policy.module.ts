@@ -5,6 +5,9 @@ import { PolicyService } from "./policy.service";
     imports: [],
     providers: [
         PolicyService
+    ],
+    exports: [
+        PolicyService
     ]
 })
 export class PolicyModule { }

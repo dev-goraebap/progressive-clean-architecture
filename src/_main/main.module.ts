@@ -1,11 +1,16 @@
 import { Module } from "@nestjs/common";
-import { MemberApiModule } from "src/api/member";
+
+import { ApiModule } from "src/api";
 import { ConfigHelperModule } from "src/shared/config";
+import { FirebaseModule } from "src/shared/firebase";
+import { MailModule } from "src/shared/mail";
 
 @Module({
     imports: [
         ConfigHelperModule,
-        MemberApiModule
+        MailModule,
+        FirebaseModule,
+        ApiModule
     ]
 })
 export class MainModule {}
