@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 
 import { MailService } from "src/shared/mail";
-import { InjectMemberRepo, MemberRepository } from "../adapters";
+import { InjectMemberRepo, MemberRepository } from "../adapters/interfaces";
 import { MemberModel } from "../core/models";
 import { AgreedPolicyVO, AuthTokenVO, AuthVO } from "../core/value-objects";
+import { RegisterLocalMemberDTO } from "../dto";
 
 @Injectable()
 export class LocalAuthService {
@@ -13,16 +14,16 @@ export class LocalAuthService {
         @InjectMemberRepo() private readonly memberRepository: MemberRepository,
     ) { }
 
-    async register(dto: any) {
+    async register(dto: RegisterLocalMemberDTO) {
         // STEP - 요청 파라미터 유효성 검증
         const { nickname, email, username, password, policyIds } = dto;
 
         // STEP - 아이디 중복 검증
-        let conflictMember = await this.memberRepository.findOne({ username });
+        let conflictMember = await this.memberRepository.findOne('username', username);
         if (conflictMember) throw new BadRequestException('이미 존재하는 아이디 입니다.');
 
         // STEP - 이메일 중복 검증
-        conflictMember = await this.memberRepository.findOne({ email });
+        conflictMember = await this.memberRepository.findOne('email', email);
         if (conflictMember) throw new BadRequestException('사용중인 이메일 입니다.');
 
         // STEP - 회원도메인 생성

@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common";
-import { MEMBER_REPOSITORY } from "./adapters";
+import { FirebaseMemberRepository } from "./adapters";
+import { MEMBER_REPOSITORY } from "./adapters/interfaces";
 import { LocalAuthService } from "./services/local-auth.service";
 
 @Module({
     providers: [
-        { provide: MEMBER_REPOSITORY, useValue: null },
+        { provide: MEMBER_REPOSITORY, useClass: FirebaseMemberRepository },
         LocalAuthService
     ],
     exports: [

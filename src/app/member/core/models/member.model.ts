@@ -2,6 +2,7 @@ import { EMAIL_VERIFIED_EXPIRED_TIME } from "../rules";
 import { AgreedPolicyVO, AuthTokenVO, AuthVO, SocialVO } from "../value-objects";
 
 export class MemberModel {
+
     readonly id: string;
     readonly nickname: string;
     readonly email: string;
@@ -62,4 +63,9 @@ export class MemberModel {
             deletedAt,
         });
     }
+
+    static fromPersistance(prop: MemberModel) {
+        return new MemberModel(prop);
+    }
+
 }

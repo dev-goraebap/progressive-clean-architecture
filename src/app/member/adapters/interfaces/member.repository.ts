@@ -1,14 +1,10 @@
 import { Inject } from "@nestjs/common";
-import { MemberModel } from "../core/models";
+import { MemberModel } from "../../core/models";
 
-export type FindOneByCriteria = {
-    readonly id?: string;
-    readonly username?: string;
-    readonly email?: string;
-}
+export type FindMemberBy = 'id' | 'email' | 'username';
 
 export interface MemberRepository {
-    findOne(criteria: FindOneByCriteria): Promise<MemberModel>;
+    findOne(by: FindMemberBy, value: string): Promise<MemberModel>;
     save(model: MemberModel): Promise<void>;
 }
 export const MEMBER_REPOSITORY = 'MEMBER_REPOSITORY';
