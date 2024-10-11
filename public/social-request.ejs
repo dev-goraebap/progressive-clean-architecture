@@ -1,0 +1,54 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <button onclick="javascript:kakaoLogin()">카카오로그인</button>
+        <button onclick="javascript:naverLogin()">네이버로그인</button>
+        <button onclick="javascript:googleLogin()">구글로그인</button>
+        <button onclick="javascript:appleLogin()">애플로그인</button>
+    </div>
+    <br />
+    <div id="result">
+        <div>요청 도메인: <%= host %>
+        </div>
+        <div>공급자:</div>
+        <div>발급토큰:</div>
+        <div>에러메시지:</div>
+    </div>
+
+    <script>
+        const appHost = '<%= host %>';
+
+        function kakaoLogin() {
+            window.open(`${appHost}/api/v1/socials/kakao/login`, '_blank', 'width=500, height=500');
+        }
+        function naverLogin() {
+            window.open(`${appHost}/api/v1/socials/naver/login`, '_blank', 'width=500, height=500');
+        }
+        function googleLogin() {
+            window.open(`${appHost}/api/v1/socials/google/login`, '_blank', 'width=500, height=500');
+        }
+        function appleLogin() {
+            window.open(`${appHost}/api/v1/socials/apple/login`, '_blank', 'width=500, height=500');
+        }
+
+        const resultEl = document.querySelector('#result');
+        window.addEventListener('message', (e) => {
+            console.log(e.data);
+            resultEl.innerHTML = `
+            <div>요청 도메인: <%= host %></div>
+            <div>공급자: ${e?.data?.provider}</div>
+            <div>발급토큰: ${e?.data?.token}</div>
+            <div>에러메시지: ${e?.data?.errMsg}</div>
+            `
+        });
+    </script>
+</body>
+
+</html>
