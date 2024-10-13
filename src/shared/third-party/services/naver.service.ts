@@ -1,11 +1,16 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 import { randomBytes } from "crypto";
 import { EnvConfig } from "src/shared/config";
 import { AuthorizedResult, OAuthProfile, OAuthProvider, OAuthProviders } from "../interfaces";
 
+/**
+ * Note:
+ * API 문서 참고
+ * https://developers.naver.com/docs/login/api/api.md
+ */
 @Injectable()
 export class NaverService implements OAuthProvider {
 
@@ -76,8 +81,25 @@ export class NaverService implements OAuthProvider {
         });
     }
 
-    getProfile(token: string): Promise<OAuthProfile> {
-        throw new Error("Method not implemented.");
+    async getProfile(token: string): Promise<OAuthProfile> {
+        const headers = new AxiosHeaders();
+        headers.setAuthorization(`Bearer ${token}`);
+        headers.setContentType('application/x-www-form-urlencoded;charset=utf-8');
+
+        const res = await axios.post('https://openapi.naver.com/v1/nid/me', null, { headers })
+            .catch(err => {
+                const errResult = err?.response?.data;
+                this.logger.log(JSON.stringify(errResult));
+                throw new BadRequestException(`네이버 프로필 조회 중 오류가 발생했습니다: ${errResult?.message}`);
+            });
+        this.logger.log(JSON.stringify(res?.data?.response));
+        const { id, nickname, profile_image } = res?.data?.response;
+        return {
+            id,
+            email: null,
+            nickname,
+            profileImageUrl: profile_image
+        };
     }
 
     logout(): Promise<void> {

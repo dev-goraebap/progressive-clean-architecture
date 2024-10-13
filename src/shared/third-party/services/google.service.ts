@@ -1,9 +1,15 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 import { EnvConfig } from "src/shared/config";
 import { AuthorizedResult, OAuthProfile, OAuthProvider, OAuthProviders } from "../interfaces";
 
+/**
+ * Note:
+ * API 문서 참고
+ * https://developers.google.com/identity/openid-connect/openid-connect?hl=ko#authenticatingtheuser
+ * https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
+ */
 @Injectable()
 export class GoogleService implements OAuthProvider {
 
@@ -70,8 +76,26 @@ export class GoogleService implements OAuthProvider {
         });
     }
 
-    getProfile(token: string): Promise<OAuthProfile> {
-        throw new Error("Method not implemented.");
+    async getProfile(token: string): Promise<OAuthProfile> {
+        const headers = new AxiosHeaders();
+        headers.setAuthorization(`Bearer ${token}`);
+        headers.setContentType('application/x-www-form-urlencoded;charset=utf-8');
+
+        const res = await axios.post('https://www.googleapis.com/oauth2/v3/userinfo', null, { headers })
+            .catch(err => {
+                const errResult = err?.response?.data;
+                this.logger.log(JSON.stringify(errResult));
+                throw new BadRequestException(`구글 프로필 조회 중 오류가 발생했습니다: ${errResult?.msg}`);
+            });
+        this.logger.log(JSON.stringify(res.data));
+
+        const { sub, name, picture, email } = res.data;
+        return {
+            id: sub,
+            email,
+            nickname: name,
+            profileImageUrl: picture
+        };
     }
 
     logout(): Promise<void> {

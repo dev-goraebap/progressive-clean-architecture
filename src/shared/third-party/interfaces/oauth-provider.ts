@@ -1,3 +1,5 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export enum OAuthProviders {
     KAKAO = 'kakao',
     GOOGLE = 'google',
@@ -6,19 +8,26 @@ export enum OAuthProviders {
     DISCORD = 'discord',
 }
 
-export type AuthorizedResult = {
-    provider: OAuthProviders;
-    accessToken: string;
+export class AuthorizedResult {
+    readonly provider: OAuthProviders;
+    readonly accessToken: string;
     /** 엑세스토큰만료시간 (UTC 날짜) */
-    expiresAt: Date;
-    errMsg?: string;
+    readonly expiresAt: Date;
+    readonly errMsg?: string;
 }
 
-export type OAuthProfile = {
-    id: string;
-    email?: string;
-    nickname?: string;
-    profileImageUrl?: string;
+export class OAuthProfile {
+    @ApiProperty()
+    readonly id: string;
+
+    @ApiProperty()
+    readonly email?: string;
+
+    @ApiProperty()
+    readonly nickname?: string;
+
+    @ApiProperty()
+    readonly profileImageUrl?: string;
 }
 
 /**
@@ -42,5 +51,5 @@ export interface OAuthProvider {
 
     getProfile(token: string): Promise<OAuthProfile>;
 
-    logout(): Promise<void>;
+    logout(token?: string): Promise<void>;
 }

@@ -13,10 +13,9 @@ export class AppController {
 
     @Get()
     @ApiOperation({ summary: 'Health Check' })
-    @Render('social-request')
+    @Render('third-party/login-example')
     healthy() {
-        const host = this.configService.get('APP_HOST');
-        const kakaoClientId = this.configService.get('KAKAO_CLIENT_ID');
-        return { host: host, kakaoClientId };
+        const appHost = this.configService.get('APP_HOST');
+        return { appHost };
     }
 }

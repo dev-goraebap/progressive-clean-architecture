@@ -1,5 +1,5 @@
 import { Global, Module } from "@nestjs/common";
-import { DiscordService, FirebaseService, GoogleService, KakaoService, NaverService } from "./services";
+import { AppleService, DiscordService, FirebaseService, GoogleService, KakaoService, NaverService } from "./services";
 
 @Global()
 @Module({
@@ -8,6 +8,7 @@ import { DiscordService, FirebaseService, GoogleService, KakaoService, NaverServ
         KakaoService,
         NaverService,
         GoogleService,
+        AppleService,
         FirebaseService,
         DiscordService,
     ],
@@ -15,6 +16,7 @@ import { DiscordService, FirebaseService, GoogleService, KakaoService, NaverServ
         KakaoService,
         NaverService,
         GoogleService,
+        AppleService,
         FirebaseService,
         DiscordService
     ]

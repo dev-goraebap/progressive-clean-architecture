@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>서드파티 인증 샘플</title>
 </head>
 
 <body>
@@ -15,7 +15,7 @@
     </div>
     <br />
     <div id="result">
-        <div>요청 도메인: <%= host %>
+        <div>요청 도메인: <%= appHost %>
         </div>
         <div>공급자:</div>
         <div>발급토큰:</div>
@@ -23,7 +23,7 @@
         <div>에러메시지:</div>
     </div>
     <script>
-        const appHost = '<%= host %>';
+        const appHost = '<%= appHost %>';
 
         function isMobile() {
             return /Mobi|Android/i.test(navigator.userAgent);
@@ -38,26 +38,26 @@
         }
 
         function kakaoLogin() {
-            openLoginWindow(`${appHost}/api/v1/third-parties/kakao/login`);
+            openLoginWindow(`/api/v1/third-parties/kakao/login`);
         }
 
         function naverLogin() {
-            openLoginWindow(`${appHost}/api/v1/third-parties/naver/login`);
+            openLoginWindow(`/api/v1/third-parties/naver/login`);
         }
 
         function googleLogin() {
-            openLoginWindow(`${appHost}/api/v1/third-parties/google/login`);
+            openLoginWindow(`/api/v1/third-parties/google/login`);
         }
 
         function appleLogin() {
-            openLoginWindow(`${appHost}/api/v1/third-parties/apple/login`);
+            openLoginWindow(`/api/v1/third-parties/apple/login`);
         }
 
         const resultEl = document.querySelector('#result');
         window.addEventListener('message', (e) => {
             console.log(e.data);
             resultEl.innerHTML = `
-            <div>요청 도메인: <%= host %></div>
+            <div>요청 도메인: ${appHost}</div>
             <div>공급자: ${e?.data?.provider}</div>
             <div>발급토큰: ${e?.data?.accessToken}</div>
             <div>만료일자: ${e?.data?.expiresAt?.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}</div>

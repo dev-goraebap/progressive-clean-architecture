@@ -1,3 +1,4 @@
+export * from './apple.service';
 export * from './discord.service';
 export * from './firebase.service';
 export * from './google.service';

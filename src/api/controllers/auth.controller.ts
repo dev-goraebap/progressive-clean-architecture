@@ -1,9 +1,10 @@
-import { Body, Controller, Logger, Post } from "@nestjs/common";
+import { Body, Controller, Get, Logger, Post } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { LocalAuthService } from "src/app/member";
 import { RegisterLocalMemberDTO } from "src/app/member/dto";
 import { PolicyService } from "src/app/policy";
+import { KakaoService } from "src/shared/third-party";
 
 @Controller({ path: 'auth', version: '1' })
 @ApiTags('사용자인증')
@@ -13,7 +14,8 @@ export class AuthController {
 
     constructor(
         private readonly localAuthService: LocalAuthService,
-        private readonly policyService: PolicyService
+        private readonly policyService: PolicyService,
+        private readonly kakaoService: KakaoService
     ) { }
 
     @Post()
@@ -21,5 +23,11 @@ export class AuthController {
     async register(@Body() dto: RegisterLocalMemberDTO) {
         await this.policyService.validates(dto.policyIds);
         return await this.localAuthService.register(dto);
+    }
+
+    @Get('logout')
+    @ApiOperation({ summary: '로그아웃' })
+    async logout() {
+        await this.kakaoService.logout();
     }
 }

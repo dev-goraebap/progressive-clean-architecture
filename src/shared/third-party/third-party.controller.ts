@@ -1,21 +1,19 @@
-import { Controller, Get, Query, Render, Res, UnauthorizedException } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { BadRequestException, Controller, Get, Query, Render, Res } from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 
-import { EnvConfig } from "src/shared/config";
-import { AuthorizedResult } from "./interfaces";
-import { GoogleService, KakaoService, NaverService } from "./services";
+import { AuthorizedResult, OAuthProfile, OAuthProviders } from "./interfaces";
+import { AppleService, GoogleService, KakaoService, NaverService } from "./services";
 
 @Controller({ path: 'third-parties', version: '1' })
 @ApiTags('서드파티인증')
 export class ThirdPartyController {
 
     constructor(
-        private readonly configService: ConfigService<EnvConfig>,
         private readonly kakaoService: KakaoService,
         private readonly naverService: NaverService,
-        private readonly googleService: GoogleService
+        private readonly googleService: GoogleService,
+        private readonly appleService: AppleService,
     ) { }
 
     @Get('kakao/login')
@@ -26,10 +24,25 @@ export class ThirdPartyController {
 
     @Get('kakao/authorize')
     @ApiOperation({ summary: '카카오로그인->인증코드로토큰발급' })
-    @Render('social-auth-result')
+    @Render('third-party/login-result')
     async kakaoAuthorize(@Query('code') code: string): Promise<AuthorizedResult> {
-        if (!code) throw new UnauthorizedException('허가되지 않은 접근입니다.');
+        if (!code) {
+            return {
+                provider: OAuthProviders.KAKAO,
+                accessToken: null,
+                expiresAt: null,
+                errMsg: '인증 코드가 제공되지 않았습니다.'
+            }
+        }
         return await this.kakaoService.authorize(code);
+    }
+
+    @Get('kakao/profile')
+    @ApiOperation({ summary: '카카오인증토큰으로프로필조회' })
+    @ApiResponse({ type: OAuthProfile })
+    async getKakaoProfile(@Query('token') token: string) {
+        if (!token) throw new BadRequestException('인증 토큰이 제공되지 않았습니다.');
+        return await this.kakaoService.getProfile(token);
     }
 
     @Get('naver/login')
@@ -40,10 +53,25 @@ export class ThirdPartyController {
 
     @Get('naver/authorize')
     @ApiOperation({ summary: '네이버로그인->인증코드로토큰발급' })
-    @Render('social-auth-result') // EJS 템플릿을 렌더링
+    @Render('third-party/login-result')
     async naverAuthorize(@Query('code') code: string): Promise<AuthorizedResult> {
-        if (!code) throw new UnauthorizedException('허가되지 않은 접근입니다.');
+        if (!code) {
+            return {
+                provider: OAuthProviders.NAVER,
+                accessToken: null,
+                expiresAt: null,
+                errMsg: '인증 코드가 제공되지 않았습니다.'
+            }
+        }
         return await this.naverService.authorize(code);
+    }
+
+    @Get('naver/profile')
+    @ApiOperation({ summary: '네이버인증토큰으로프로필조회' })
+    @ApiResponse({ type: OAuthProfile })
+    async getNaverProfile(@Query('token') token: string) {
+        if (!token) throw new BadRequestException('인증 토큰이 제공되지 않았습니다.');
+        return await this.naverService.getProfile(token);
     }
 
     @Get('google/login')
@@ -54,24 +82,53 @@ export class ThirdPartyController {
 
     @Get('google/authorize')
     @ApiOperation({ summary: '구글로그인->인증코드로토큰발급' })
-    @Render('social-auth-result') // EJS 템플릿을 렌더링
+    @Render('third-party/login-result')
     async googleAuthorize(@Query('code') code: string): Promise<AuthorizedResult> {
-        if (!code) throw new UnauthorizedException('인증 코드가 제공되지 않았습니다.');
+        if (!code) {
+            return {
+                provider: OAuthProviders.GOOGLE,
+                accessToken: null,
+                expiresAt: null,
+                errMsg: '인증 코드가 제공되지 않았습니다.'
+            }
+        }
         return await this.googleService.authorize(code);
+    }
+
+    @Get('google/profile')
+    @ApiOperation({ summary: '구글인증토큰으로프로필조회' })
+    @ApiResponse({ type: OAuthProfile })
+    async getGoogleProfile(@Query('token') token: string) {
+        if (!token) throw new BadRequestException('인증 토큰이 제공되지 않았습니다.');
+        return await this.googleService.getProfile(token);
     }
 
     @Get('apple/login')
     @ApiOperation({ summary: '애플로그인페이지로이동' })
     async appleLogin(@Res() res: Response) {
-        const clientId = this.configService.get('APPLE_CLIENT_ID');
-        const redirectUri = encodeURIComponent(this.configService.get('APPLE_REDIRECT_URI'));
-        let scope = 'email name edu.users.read edu.classes.read';  // 요청할 스코프
-        scope = encodeURIComponent(scope);  // 퍼센트 인코딩 처리
-        const responseType = 'code';
-        let url = 'https://appleid.apple.com/auth/authorize';
-        url += `?client_id=${clientId}`;
-        url += `&redirect_uri=${redirectUri}`;
-        url += `&response_type=${responseType}`;
-        return res.redirect(url);
+        return res.redirect(this.appleService.getLoginUrl());
+    }
+
+    @Get('apple/authorize')
+    @ApiOperation({ summary: '애플로그인->인증코드로토큰발급(미완료)' })
+    @Render('third-party/login-result')
+    async appleAuthorize(@Query('code') code: string): Promise<AuthorizedResult> {
+        if (!code) {
+            return {
+                provider: OAuthProviders.APPLE,
+                accessToken: null,
+                expiresAt: null,
+                errMsg: '인증 코드가 제공되지 않았습니다.'
+            }
+        }
+        return await this.appleService.authorize(code);
+    }
+
+    @Get('apple/profile')
+    @ApiOperation({ summary: '애플인증토큰으로프로필조회(미완료)' })
+    @ApiResponse({ type: OAuthProfile })
+    async getAppleProfile(@Query('token') token: string) {
+        if (!token) throw new BadRequestException('인증 토큰이 제공되지 않았습니다.');
+        return this.appleService.getProfile(token);
     }
 }
