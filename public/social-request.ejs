@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
@@ -19,23 +19,38 @@
         </div>
         <div>공급자:</div>
         <div>발급토큰:</div>
+        <div>만료일자:</div>
         <div>에러메시지:</div>
     </div>
-
     <script>
         const appHost = '<%= host %>';
 
+        function isMobile() {
+            return /Mobi|Android/i.test(navigator.userAgent);
+        }
+
+        function openLoginWindow(url) {
+            if (isMobile()) {
+                window.open(url, '_blank');
+            } else {
+                window.open(url, '_blank', 'width=500, height=500');
+            }
+        }
+
         function kakaoLogin() {
-            window.open(`${appHost}/api/v1/socials/kakao/login`, '_blank', 'width=500, height=500');
+            openLoginWindow(`${appHost}/api/v1/third-parties/kakao/login`);
         }
+
         function naverLogin() {
-            window.open(`${appHost}/api/v1/socials/naver/login`, '_blank', 'width=500, height=500');
+            openLoginWindow(`${appHost}/api/v1/third-parties/naver/login`);
         }
+
         function googleLogin() {
-            window.open(`${appHost}/api/v1/socials/google/login`, '_blank', 'width=500, height=500');
+            openLoginWindow(`${appHost}/api/v1/third-parties/google/login`);
         }
+
         function appleLogin() {
-            window.open(`${appHost}/api/v1/socials/apple/login`, '_blank', 'width=500, height=500');
+            openLoginWindow(`${appHost}/api/v1/third-parties/apple/login`);
         }
 
         const resultEl = document.querySelector('#result');
@@ -44,7 +59,8 @@
             resultEl.innerHTML = `
             <div>요청 도메인: <%= host %></div>
             <div>공급자: ${e?.data?.provider}</div>
-            <div>발급토큰: ${e?.data?.token}</div>
+            <div>발급토큰: ${e?.data?.accessToken}</div>
+            <div>만료일자: ${e?.data?.expiresAt?.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}</div>
             <div>에러메시지: ${e?.data?.errMsg}</div>
             `
         });

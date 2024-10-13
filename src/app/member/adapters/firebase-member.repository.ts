@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 
-import { FirebaseService } from 'src/shared/firebase/firebase.service';
+import { FirebaseService } from 'src/shared/third-party/services/firebase.service';
 import { MemberModel } from "../core/models";
 import { FindMemberBy, MemberRepository } from "./interfaces";
 

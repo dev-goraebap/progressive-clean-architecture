@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { MemberModule } from "src/app/member";
 import { PolicyModule } from "src/app/policy";
+import { ThirdPartyController } from "src/shared/third-party";
 import { AppController } from "./controllers/app.controller";
 import { AuthController } from "./controllers/auth.controller";
 import { MemberController } from "./controllers/member.controller";
-import { SocialController } from "./controllers/social.controller";
 
 @Module({
     imports: [
@@ -13,9 +13,9 @@ import { SocialController } from "./controllers/social.controller";
     ],
     controllers: [
         AppController,
+        ThirdPartyController,
         MemberController,
         AuthController,
-        SocialController
     ],
 })
 export class ApiModule {}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
@@ -12,11 +12,13 @@
     <script>
         window.onload = function () {
             const provider = '<%= provider %>';
-            const token = '<%= token %>';
+            const accessToken = '<%= accessToken %>';
+            const expiresAt = '<%= expiresAt %>';
             const errMsg = '<%= errMsg %>';
             window.opener.postMessage({
                 provider,
-                token,
+                accessToken,
+                expiresAt,
                 errMsg
             }, '*');
             window.close();

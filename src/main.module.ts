@@ -2,14 +2,14 @@ import { Module } from "@nestjs/common";
 
 import { ApiModule } from "src/api";
 import { ConfigHelperModule } from "src/shared/config";
-import { FirebaseModule } from "src/shared/firebase";
 import { MailModule } from "src/shared/mail";
+import { ThirdPartyModule } from "./shared/third-party";
 
 @Module({
     imports: [
         ConfigHelperModule,
+        ThirdPartyModule,
         MailModule,
-        FirebaseModule,
         ApiModule
     ]
 })

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
-import { EnvConfig } from "../config";
+import { EnvConfig } from "src/shared/config";
 
 @Injectable()
 export class DiscordService {
@@ -12,7 +12,7 @@ export class DiscordService {
         private readonly configService: ConfigService<EnvConfig>
     ) { }
 
-    async sendError(logMessage: string) {
+    async notify(logMessage: string) {
         const url = this.configService.get('DISCORD_WEBHOOK_URL');
         try {
             await axios.post(url, {

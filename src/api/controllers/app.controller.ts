@@ -16,6 +16,7 @@ export class AppController {
     @Render('social-request')
     healthy() {
         const host = this.configService.get('APP_HOST');
-        return { host: host };
+        const kakaoClientId = this.configService.get('KAKAO_CLIENT_ID');
+        return { host: host, kakaoClientId };
     }
 }
