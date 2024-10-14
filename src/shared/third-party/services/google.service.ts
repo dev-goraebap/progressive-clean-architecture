@@ -57,10 +57,12 @@ export class GoogleService implements OAuthProvider {
             },
         }).then(res => {
             const { access_token, expires_in } = res.data;
+            console.log(expires_in);
             const expiresAt = new Date(Date.now() + expires_in * 1000);
             return {
                 provider: OAuthProviders.GOOGLE,
                 accessToken: access_token,
+                idToken: null,
                 expiresAt,
                 errMsg: null
             };
@@ -70,6 +72,7 @@ export class GoogleService implements OAuthProvider {
             return {
                 provider: OAuthProviders.GOOGLE,
                 accessToken: null,
+                idToken: null,
                 expiresAt: null,
                 errMsg: `구글 인증 중 오류가 발생했습니다: ${errResult?.error_description}`
             };

@@ -60,6 +60,7 @@ export class NaverService implements OAuthProvider {
                 return {
                     provider: OAuthProviders.NAVER,
                     accessToken: access_token,
+                    idToken: null,
                     expiresAt,
                     errMsg: null
                 } as AuthorizedResult;
@@ -67,6 +68,7 @@ export class NaverService implements OAuthProvider {
                 return {
                     provider: OAuthProviders.NAVER,
                     accessToken: null,
+                    idToken: null,
                     expiresAt: null,
                     errMsg: `네이버 인증 중 오류가 발생했습니다: ${error_description}`
                 } as AuthorizedResult;

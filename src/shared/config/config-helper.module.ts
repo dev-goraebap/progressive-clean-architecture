@@ -18,7 +18,9 @@ export type EnvConfig = {
     GOOGLE_CLIENT_SECRET: string;
     GOOGLE_REDIRECT_URI: string;
     APPLE_CLIENT_ID: string;
-    APPLE_CLIENT_SECRET: string;
+    APPLE_TEAM_ID: string;
+    APPLE_KEY_ID: string;
+    APPLE_P8_PATH: string;
     APPLE_REDIRECT_URI: string;
 }
 
@@ -26,25 +28,7 @@ export type EnvConfig = {
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: `.env.${process.env.NODE_ENV}`,
-            // validationSchema: Joi.object({
-            //     APP_PORT: Joi.string().required(),
-            //     DISCORD_WEBHOOK_URL: Joi.string().required(),
-            //     FIREBASE_PROJECT_ID: Joi.string().required(),
-            //     FIREBASE_PRIVATE_KEY: Joi.string().required(),
-            //     FIREBASE_CLIENT_EMAIL: Joi.string().required(),
-            //     KAKAO_CLIENT_ID: Joi.string().required(),
-            //     KAKAO_REDIRECT_URI: Joi.string().required(),
-            //     NAVER_CLIENT_ID: Joi.string().required(),
-            //     NAVER_CLIENT_SECRET: Joi.string().required(),
-            //     NAVER_REDIRECT_URI: Joi.string().required(),
-            //     GOOGLE_CLIENT_ID: Joi.string().required(),
-            //     GOOGLE_CLIENT_SECRET: Joi.string().required(),
-            //     GOOGLE_REDIRECT_URI: Joi.string().required(),
-            //     APPLE_CLIENT_ID: Joi.string().required(),
-            //     APPLE_CLIENT_SECRET: Joi.string().required(),
-            //     APPLE_REDIRECT_URI: Joi.string().required(),
-            // })
+            envFilePath: `.env.${process.env.NODE_ENV}`
         })
     ],
     exports: [

@@ -49,6 +49,7 @@ export class KakaoService implements OAuthProvider {
                 return {
                     provider: OAuthProviders.KAKAO,
                     accessToken: access_token,
+                    idToken: null,
                     expiresAt,
                     errMsg: null
                 } as AuthorizedResult;
@@ -59,6 +60,7 @@ export class KakaoService implements OAuthProvider {
                 return {
                     provider: OAuthProviders.KAKAO,
                     accessToken: null,
+                    idToken: null,
                     expiresAt: null,
                     errMsg: `[${errResult?.error_code}] 카카오 인증 중 오류가 발생했습니다.`
                 } as AuthorizedResult;
