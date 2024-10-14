@@ -30,6 +30,7 @@ export class ThirdPartyController {
             return {
                 provider: OAuthProviders.KAKAO,
                 accessToken: null,
+                idToken: null,
                 expiresAt: null,
                 errMsg: '인증 코드가 제공되지 않았습니다.'
             }
@@ -59,6 +60,7 @@ export class ThirdPartyController {
             return {
                 provider: OAuthProviders.NAVER,
                 accessToken: null,
+                idToken: null,
                 expiresAt: null,
                 errMsg: '인증 코드가 제공되지 않았습니다.'
             }
@@ -88,6 +90,7 @@ export class ThirdPartyController {
             return {
                 provider: OAuthProviders.GOOGLE,
                 accessToken: null,
+                idToken: null,
                 expiresAt: null,
                 errMsg: '인증 코드가 제공되지 않았습니다.'
             }
@@ -117,6 +120,7 @@ export class ThirdPartyController {
             return {
                 provider: OAuthProviders.APPLE,
                 accessToken: null,
+                idToken: null,
                 expiresAt: null,
                 errMsg: '인증 코드가 제공되지 않았습니다.'
             }
@@ -130,5 +134,12 @@ export class ThirdPartyController {
     async getAppleProfile(@Query('token') token: string) {
         if (!token) throw new BadRequestException('인증 토큰이 제공되지 않았습니다.');
         return this.appleService.getProfile(token);
+    }
+
+    @Get('apple/secret-token')
+    @ApiOperation({ summary: 'p8키로시크릿키테스트' })
+    @ApiResponse({ type: OAuthProfile })
+    async generateAppleSecret() {
+        return this.appleService.createClientSecret();
     }
 }
