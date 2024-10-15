@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { JusogoViewModel, NaverDrivePathsViewModel, NaverPlaceViewModel } from "../core/models";
+import { FcmResultViewModel, JusogoViewModel, NaverDrivePathsViewModel, NaverPlaceViewModel } from "../core/models";
 import { FcmNotifyDTO, FetchNaverDrivePathDTO, FetchNaverPlaceDTO } from "../dto";
 import { FirebaseService, JusogoService, NaverService } from "../services";
 
@@ -16,7 +16,7 @@ export class ThirdPartyServiceController {
     
     @Post('fcm/notify')
     @ApiOperation({ summary: 'FCM푸시알림' })
-    @ApiResponse({ type: [NaverPlaceViewModel] })
+    @ApiResponse({ type: FcmResultViewModel })
     async fmcNotify(@Body() dto: FcmNotifyDTO) {
         return await this.firebaseService.notify(dto);
     }
