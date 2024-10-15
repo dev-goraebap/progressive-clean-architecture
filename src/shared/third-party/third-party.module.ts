@@ -1,5 +1,5 @@
 import { Global, Module } from "@nestjs/common";
-import { AppleService, DiscordService, FirebaseService, GoogleService, KakaoService, NaverService } from "./services";
+import { AppleService, DiscordService, FirebaseService, GoogleService, JusogoService, KakaoService, NaverService } from "./services";
 
 @Global()
 @Module({
@@ -11,6 +11,7 @@ import { AppleService, DiscordService, FirebaseService, GoogleService, KakaoServ
         AppleService,
         FirebaseService,
         DiscordService,
+        JusogoService
     ],
     exports: [
         KakaoService,
@@ -18,7 +19,8 @@ import { AppleService, DiscordService, FirebaseService, GoogleService, KakaoServ
         GoogleService,
         AppleService,
         FirebaseService,
-        DiscordService
+        DiscordService,
+        JusogoService
     ]
 })
 export class ThirdPartyModule {}

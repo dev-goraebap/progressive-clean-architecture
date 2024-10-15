@@ -2,7 +2,9 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios, { AxiosHeaders } from "axios";
 import { EnvConfig } from "src/shared/config";
-import { AuthorizedResult, OAuthProfile, OAuthProvider, OAuthProviders } from "../interfaces";
+import { OAuthAuthorizedViewModel, OAuthProfileViewModel } from "../core/models";
+import { OAuthProviders } from "../core/types";
+import { OAuthProvider } from "../interfaces";
 
 /**
  * Note:
@@ -27,7 +29,7 @@ export class GoogleService implements OAuthProvider {
         this.redirectUri = this.configService.get('GOOGLE_REDIRECT_URI');
     }
 
-    getLoginUrl(): string {
+    oauthGetLoginUrl(): string {
         const state = 'RANDOM_STATE';
         const scope = encodeURIComponent('email profile');
         const responseType = 'code';
@@ -42,7 +44,7 @@ export class GoogleService implements OAuthProvider {
         return url;
     }
 
-    async authorize(code: string): Promise<AuthorizedResult> {
+    async oauthAuthorize(code: string): Promise<OAuthAuthorizedViewModel> {
         const params = new URLSearchParams();
         params.append('code', code);
         params.append('client_id', this.clientId);
@@ -79,7 +81,7 @@ export class GoogleService implements OAuthProvider {
         });
     }
 
-    async getProfile(token: string): Promise<OAuthProfile> {
+    async oauthGetProfile(token: string): Promise<OAuthProfileViewModel> {
         const headers = new AxiosHeaders();
         headers.setAuthorization(`Bearer ${token}`);
         headers.setContentType('application/x-www-form-urlencoded;charset=utf-8');
@@ -99,9 +101,5 @@ export class GoogleService implements OAuthProvider {
             nickname: name,
             profileImageUrl: picture
         };
-    }
-
-    logout(): Promise<void> {
-        throw new Error("Method not implemented.");
     }
 }

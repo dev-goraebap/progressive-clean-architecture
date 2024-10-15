@@ -14,6 +14,8 @@ export type EnvConfig = {
     NAVER_CLIENT_ID: string;
     NAVER_CLIENT_SECRET: string;
     NAVER_REDIRECT_URI: string;
+    NAVER_CLOUD_CLIENT_ID: string;
+    NAVER_CLOUD_CLIENT_SECRET: string;
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
     GOOGLE_REDIRECT_URI: string;
@@ -22,6 +24,7 @@ export type EnvConfig = {
     APPLE_KEY_ID: string;
     APPLE_P8_PATH: string;
     APPLE_REDIRECT_URI: string;
+    JUSOGO_KEY: string;
 }
 
 @Global()

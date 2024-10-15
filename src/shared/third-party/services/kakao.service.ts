@@ -3,7 +3,9 @@ import { ConfigService } from "@nestjs/config";
 import axios, { AxiosHeaders } from "axios";
 
 import { EnvConfig } from "src/shared/config";
-import { AuthorizedResult, OAuthProfile, OAuthProvider, OAuthProviders } from "../interfaces";
+import { OAuthAuthorizedViewModel, OAuthProfileViewModel } from "../core/models";
+import { OAuthProviders } from "../core/types";
+import { OAuthProvider } from "../interfaces";
 
 /**
  * Note:
@@ -27,7 +29,7 @@ export class KakaoService implements OAuthProvider {
         this.adminKey = this.configService.get('KAKAO_ADMIN_KEY');
     }
 
-    getLoginUrl(): string {
+    oauthGetLoginUrl(): string {
         let url = 'https://kauth.kakao.com/oauth/authorize?'
         url += `client_id=${this.clientId}`
         url += `&redirect_uri=${this.redirectUri}`
@@ -35,7 +37,7 @@ export class KakaoService implements OAuthProvider {
         return url;
     }
 
-    async authorize(code: string): Promise<AuthorizedResult> {
+    async oauthAuthorize(code: string): Promise<OAuthAuthorizedViewModel> {
         const headers = { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' };
         return await axios.post('https://kauth.kakao.com/oauth/token', {
             grant_type: 'authorization_code',
@@ -52,7 +54,7 @@ export class KakaoService implements OAuthProvider {
                     idToken: null,
                     expiresAt,
                     errMsg: null
-                } as AuthorizedResult;
+                } as OAuthAuthorizedViewModel;
             })
             .catch(err => {
                 this.logger.log(JSON.stringify(err?.response?.data));
@@ -63,11 +65,11 @@ export class KakaoService implements OAuthProvider {
                     idToken: null,
                     expiresAt: null,
                     errMsg: `[${errResult?.error_code}] 카카오 인증 중 오류가 발생했습니다.`
-                } as AuthorizedResult;
+                } as OAuthAuthorizedViewModel;
             });
     }
 
-    async getProfile(token: string): Promise<OAuthProfile> {
+    async oauthGetProfile(token: string): Promise<OAuthProfileViewModel> {
         const headers = new AxiosHeaders();
         headers.setAuthorization(`Bearer ${token}`);
         headers.setContentType('application/x-www-form-urlencoded;charset=utf-8');
@@ -86,26 +88,5 @@ export class KakaoService implements OAuthProvider {
             nickname: null,
             profileImageUrl: null
         };
-    }
-
-    async logout(): Promise<void> {
-        // 3743400481
-        // 3743400481
-        console.log(this.adminKey);
-
-        const headers = new AxiosHeaders();
-        headers.setAuthorization(`KakaoAK ${this.adminKey}`);
-        headers.setContentType('application/x-www-form-urlencoded;charset=utf-8');
-
-        const params = new URLSearchParams();
-        params.append('target_id_type', 'user_id');
-        params.append('target_id', '3743400481');
-
-        await axios.post('https://kapi.kakao.com/v1/user/unlink', params.toString(), { headers })
-            .catch(err => {
-                const errResult = err?.response?.data;
-                this.logger.log(JSON.stringify(errResult));
-                throw new BadRequestException(`카카오 로그아웃 중 오류가 발생했습니다: ${errResult?.msg}`);
-            });
     }
 }

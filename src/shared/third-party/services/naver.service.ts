@@ -4,7 +4,10 @@ import { ConfigService } from "@nestjs/config";
 import axios, { AxiosHeaders } from "axios";
 import { randomBytes } from "crypto";
 import { EnvConfig } from "src/shared/config";
-import { AuthorizedResult, OAuthProfile, OAuthProvider, OAuthProviders } from "../interfaces";
+import { NaverDrivePathsViewModel, NaverPlaceViewModel, OAuthAuthorizedViewModel, OAuthProfileViewModel } from "../core/models";
+import { OAuthProviders } from "../core/types";
+import { FetchNaverDrivePathDTO, FetchNaverPlaceDTO } from "../dto";
+import { OAuthProvider } from "../interfaces";
 
 /**
  * Note:
@@ -19,6 +22,8 @@ export class NaverService implements OAuthProvider {
     private readonly clientId: string;
     private readonly clientSecret: string;
     private readonly redirectUri: string;
+    private readonly cloudClientId: string;
+    private readonly cloudClientSecret: string;
 
     constructor(
         private readonly configService: ConfigService<EnvConfig>
@@ -26,9 +31,11 @@ export class NaverService implements OAuthProvider {
         this.clientId = this.configService.get('NAVER_CLIENT_ID');
         this.clientSecret = this.configService.get('NAVER_CLIENT_SECRET');
         this.redirectUri = this.configService.get('NAVER_REDIRECT_URI');
+        this.cloudClientId = this.configService.get('NAVER_CLOUD_CLIENT_ID');
+        this.cloudClientSecret = this.configService.get('NAVER_CLOUD_CLIENT_SECRET');
     }
 
-    getLoginUrl(): string {
+    oauthGetLoginUrl(): string {
         let url = 'https://nid.naver.com/oauth2.0/authorize?response_type=code';
         const state = randomBytes(16).toString('hex');
         url += `&client_id=${this.clientId}`;
@@ -37,7 +44,7 @@ export class NaverService implements OAuthProvider {
         return url;
     }
 
-    async authorize(code: string): Promise<AuthorizedResult> {
+    async oauthAuthorize(code: string): Promise<OAuthAuthorizedViewModel> {
         let apiURL = 'https://nid.naver.com/oauth2.0/token?grant_type=authorization_code';
         apiURL += `&client_id=${this.clientId}`;
         apiURL += `&client_secret=${this.clientSecret}`;
@@ -63,7 +70,7 @@ export class NaverService implements OAuthProvider {
                     idToken: null,
                     expiresAt,
                     errMsg: null
-                } as AuthorizedResult;
+                } as OAuthAuthorizedViewModel;
             } else {
                 return {
                     provider: OAuthProviders.NAVER,
@@ -71,7 +78,7 @@ export class NaverService implements OAuthProvider {
                     idToken: null,
                     expiresAt: null,
                     errMsg: `네이버 인증 중 오류가 발생했습니다: ${error_description}`
-                } as AuthorizedResult;
+                } as OAuthAuthorizedViewModel;
             }
         }).catch(_ => {
             return {
@@ -79,11 +86,11 @@ export class NaverService implements OAuthProvider {
                 accessToken: null,
                 expiresAt: null,
                 errMsg: '네이버 인증 중 오류가 발생했습니다.'
-            } as AuthorizedResult;
+            } as OAuthAuthorizedViewModel;
         });
     }
 
-    async getProfile(token: string): Promise<OAuthProfile> {
+    async oauthGetProfile(token: string): Promise<OAuthProfileViewModel> {
         const headers = new AxiosHeaders();
         headers.setAuthorization(`Bearer ${token}`);
         headers.setContentType('application/x-www-form-urlencoded;charset=utf-8');
@@ -104,7 +111,56 @@ export class NaverService implements OAuthProvider {
         };
     }
 
-    logout(): Promise<void> {
-        throw new Error("Method not implemented.");
+    async fetchPlaces(dto: FetchNaverPlaceDTO) {
+        const { address, display, keyword } = dto;
+
+        const headers = new AxiosHeaders();
+        headers.set('X-Naver-Client-Id', this.clientId);
+        headers.set('X-Naver-Client-Secret', this.clientSecret);
+        headers.setAccept('*/*');
+        headers.set('Access-Control-Allow-Origin', '*');
+
+        const params = new URLSearchParams();
+        params.set('query', `${address} ${keyword}`);
+        params.set('display', display.toString());
+        params.set('sort', 'random');
+
+        const res = await axios.get(`https://openapi.naver.com/v1/search/local.json`, {
+            headers,
+            params
+        }).catch(err => {
+            const errResult = err?.response?.data;
+            this.logger.log(JSON.stringify(errResult));
+            throw new BadRequestException(`네이버 장소 검색 중 오류가 발생했습니다: ${errResult?.errorMessage}`);
+        });
+
+        return res.data.items ?? [] as NaverPlaceViewModel[];
+    }
+
+    async fetchDrivePaths(dto: FetchNaverDrivePathDTO) {
+        const headers = new AxiosHeaders();
+        headers.set('X-NCP-APIGW-API-KEY-Id', this.cloudClientId);
+        headers.set('X-NCP-APIGW-API-KEY', this.cloudClientSecret);
+
+        const params = new URLSearchParams();
+        params.set('start', `${dto.startLng},${dto.startLat}`);
+        params.set('goal', `${dto.goalLng},${dto.goalLat}`);
+        params.set('option', 'trafast');
+
+        const res = await axios.get(`https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving`, {
+            headers,
+            params
+        }).catch(err => {
+            const errResult = err?.response?.data;
+            this.logger.log(JSON.stringify(errResult));
+            throw new BadRequestException(`네이버 드라이브 경로 검색 중 오류가 발생했습니다: ${errResult?.errorMessage}`);
+        });
+
+        const { code, message: errMsg } = res.data;
+        if (code !== 0) {
+            throw new BadRequestException(`네이버 드라이브 경로 검색 중 오류가 발생했습니다: ${errMsg}`);
+        }
+  
+        return res.data as NaverDrivePathsViewModel;
     }
 }

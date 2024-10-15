@@ -6,7 +6,9 @@ import * as fs from 'fs';
 import { EnvConfig } from "src/shared/config";
 
 import axios from "axios";
-import { AuthorizedResult, OAuthProfile, OAuthProvider, OAuthProviders } from "../interfaces";
+import { OAuthAuthorizedViewModel, OAuthProfileViewModel } from "../core/models";
+import { OAuthProviders } from "../core/types";
+import { OAuthProvider } from "../interfaces";
 
 /**
  * Note:
@@ -27,7 +29,7 @@ export class AppleService implements OAuthProvider {
     /**
      * Note:
      * 애플은 다른 OAuth 공급자와 다르게 클라이언트 시크릿을 직접 생성해야함.
-     * 때문에 만료시간이 끝나기 전까지는 캐시된 시크릿을 사용하도록 함
+     * 그래서 만료시간이 끝나기 전까지는 캐시된 시크릿을 사용하도록 함
      */
     private cachedClientSecret: string | null = null;
     private clientSecretExpiration: number | null = null;
@@ -42,7 +44,7 @@ export class AppleService implements OAuthProvider {
         this.p8Path = this.configService.get('APPLE_P8_PATH');
     }
 
-    getLoginUrl(): string {
+    oauthGetLoginUrl(): string {
         let scope = 'email name edu.users.read edu.classes.read';  // 요청할 스코프
         scope = encodeURIComponent(scope);  // 퍼센트 인코딩 처리
         const responseType = 'code';
@@ -53,7 +55,7 @@ export class AppleService implements OAuthProvider {
         return url;
     }
 
-    async authorize(code: string): Promise<AuthorizedResult> {
+    async oauthAuthorize(code: string): Promise<OAuthAuthorizedViewModel> {
         const headers = { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' };
         return await axios.post('https://appleid.apple.com/auth/token', {
             grant_type: 'authorization_code',
@@ -71,7 +73,7 @@ export class AppleService implements OAuthProvider {
                     idToken: id_token,
                     expiresAt,
                     errMsg: null
-                } as AuthorizedResult;
+                } as OAuthAuthorizedViewModel;
             })
             .catch(err => {
                 this.logger.log(JSON.stringify(err?.response?.data));
@@ -81,11 +83,11 @@ export class AppleService implements OAuthProvider {
                     accessToken: null,
                     expiresAt: null,
                     errMsg: `[${errResult?.error}] 애플 인증 중 오류가 발생했습니다.`
-                } as AuthorizedResult;
+                } as OAuthAuthorizedViewModel;
             });
     }
 
-    async getProfile(idToken: string): Promise<OAuthProfile> {
+    async oauthGetProfile(idToken: string): Promise<OAuthProfileViewModel> {
         const payload: any = jwt.decode(idToken);
         this.logger.log(JSON.stringify(payload));
         return {
@@ -93,11 +95,7 @@ export class AppleService implements OAuthProvider {
             email: null,
             nickname: null,
             profileImageUrl: null
-        } as OAuthProfile;
-    }
-
-    logout(token?: string): Promise<void> {
-        throw new Error("Method not implemented.");
+        } as OAuthProfileViewModel;
     }
 
     createClientSecret() {
