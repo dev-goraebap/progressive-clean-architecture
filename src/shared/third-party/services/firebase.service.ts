@@ -30,11 +30,8 @@ export class FirebaseService {
     }
 
     async notify(dto: FcmNotifyDTO) {
-        // FCM 알림 요청 DTO 로그 출력
         this.logger.log(JSON.stringify(dto));
-
-        // DTO에서 필요한 값을 구조 분해 할당
-        const { fcmTokens, title, content, meta } = dto;
+        const { fcmTokens, title, content, data: meta } = dto;
 
         // 토큰 배열을 500개씩 나눔
         const tokenChunks = this.tokenChunkArray(fcmTokens, 500);

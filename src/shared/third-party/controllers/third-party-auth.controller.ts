@@ -14,9 +14,9 @@ export class ThirdPartyAuthController {
         private readonly kakaoService: KakaoService,
         private readonly naverService: NaverService,
         private readonly googleService: GoogleService,
-        private readonly appleService: AppleService,
+        private readonly appleService: AppleService
     ) { }
-
+    
     @Get('kakao/login')
     @ApiOperation({ summary: '카카오로그인페이지로이동' })
     async kakaoLogin(@Res() res: Response) {

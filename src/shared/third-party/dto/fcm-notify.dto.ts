@@ -22,11 +22,11 @@ export class FcmNotifyDTO {
     @IsOptional()
     @ApiProperty({ default: {
         type: 'NOTICE',
-        id: 'N0001',
-        data: JSON.stringify({
+        meta: JSON.stringify({
+            id: 'N0001',
             prop1: 'PROP1',
             prop2: 'PROP2'
         })
     }, description: '요구사항에 따른 메타 데이터' })
-    readonly meta: any;
+    readonly data: any;
 }

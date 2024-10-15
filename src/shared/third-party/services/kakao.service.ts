@@ -18,7 +18,6 @@ export class KakaoService implements OAuthProvider {
     private readonly logger = new Logger(KakaoService.name);
 
     private readonly clientId: string;
-    private readonly adminKey: string;
     private readonly redirectUri: string;
 
     constructor(
@@ -26,7 +25,6 @@ export class KakaoService implements OAuthProvider {
     ) {
         this.clientId = this.configService.get('KAKAO_CLIENT_ID');
         this.redirectUri = this.configService.get('KAKAO_REDIRECT_URI');
-        this.adminKey = this.configService.get('KAKAO_ADMIN_KEY');
     }
 
     oauthGetLoginUrl(): string {

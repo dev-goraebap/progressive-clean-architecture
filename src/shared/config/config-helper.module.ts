@@ -9,7 +9,6 @@ export type EnvConfig = {
     FIREBASE_PRIVATE_KEY: string;
     FIREBASE_CLIENT_EMAIL: string;
     KAKAO_CLIENT_ID: string;
-    KAKAO_ADMIN_KEY: string;
     KAKAO_REDIRECT_URI: string;
     NAVER_CLIENT_ID: string;
     NAVER_CLIENT_SECRET: string;

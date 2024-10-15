@@ -11,7 +11,7 @@ import { AppleService, DiscordService, FirebaseService, GoogleService, JusogoSer
         AppleService,
         FirebaseService,
         DiscordService,
-        JusogoService
+        JusogoService,
     ],
     exports: [
         KakaoService,
@@ -20,7 +20,7 @@ import { AppleService, DiscordService, FirebaseService, GoogleService, JusogoSer
         AppleService,
         FirebaseService,
         DiscordService,
-        JusogoService
+        JusogoService,
     ]
 })
 export class ThirdPartyModule {}
